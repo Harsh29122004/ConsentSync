@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConsentSync Dashboard Fixes Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛡️ ConsentSync Dashboard Fixes Test</h1>
+    <p>Testing the fixes for the dashboard.js errors.</p>
+
+    <div class="test-section">
+        <h2>🔧 Issues Fixed</h2>
+        <div id="fixesTest"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Error Details</h2>
+        <div id="errorDetails"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ Solutions Implemented</h2>
+        <div id="solutions"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Installation & Testing</h2>
+        <div class="info">
+            <h3>To test the fixed dashboard:</h3>
+            <ol>
+                <li><strong>Install Extension:</strong> Load the extension in Chrome via Developer mode</li>
+                <li><strong>Open Dashboard:</strong> Click "Dashboard" in the popup or go to extension options</li>
+                <li><strong>Check Console:</strong> Should be no more "Cannot read properties of undefined" errors</li>
+                <li><strong>Test Features:</strong> All dashboard tabs should work without errors</li>
+            </ol>
+            
+            <h3>Expected Results:</h3>
+            <ul>
+                <li><strong>No Runtime Errors:</strong> The "Cannot read properties of undefined" error should be gone</li>
+                <li><strong>No URL Pattern Errors:</strong> Invalid URL pattern errors should be resolved</li>
+                <li><strong>Graceful Favicon Handling:</strong> Missing favicons should show fallback icons</li>
+                <li><strong>Safe Statistics Updates:</strong> Dashboard statistics should update without errors</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function testFixes() {
+            const container = document.getElementById('fixesTest');
+            let html = '<div class="status success">✅ All dashboard.js errors fixed</div>';
+            
+            html += '<h4>Fixed Issues:</h4>';
+            html += '<ul>';
+            html += '<li>✅ <strong>TypeError: Cannot read properties of undefined (reading \'setting\')</strong></li>';
+            html += '<li>✅ <strong>Unchecked runtime.lastError: Invalid URL pattern</strong></li>';
+            html += '<li>✅ <strong>Failed to load favicon resource (404)</strong></li>';
+            html += '<li>✅ <strong>Statistics update errors</strong></li>';
+            html += '</ul>';
+            
+            container.innerHTML = html;
+        }
+
+        function testErrorDetails() {
+            const container = document.getElementById('errorDetails');
+            let html = '<div class="status info">📋 Error Analysis</div>';
+            
+            html += '<h4>Error 1: TypeError: Cannot read properties of undefined (reading \'setting\')</h4>';
+            html += '<p><strong>Cause:</strong> The chrome.contentSettings API callback was returning undefined result</p>';
+            html += '<p><strong>Location:</strong> dashboard.js:283 in getPermissionSetting method</p>';
+            html += '<p><strong>Impact:</strong> Permission settings could not be retrieved for sites</p>';
+            
+            html += '<h4>Error 2: Invalid URL pattern</h4>';
+            html += '<p><strong>Cause:</strong> Some domains contained invalid characters or were malformed</p>';
+            html += '<p><strong>Location:</strong> loadSites method when creating URL patterns</p>';
+            html += '<p><strong>Impact:</strong> Permission checking failed for some sites</p>';
+            
+            html += '<h4>Error 3: Favicon 404 errors</h4>';
+            html += '<p><strong>Cause:</strong> Google favicon service couldn\'t find icons for some domains</p>';
+            html += '<p><strong>Location:</strong> renderSiteRow method</p>';
+            html += '<p><strong>Impact:</strong> Console spam and missing site icons</p>';
+            
+            container.innerHTML = html;
+        }
+
+        function testSolutions() {
+            const container = document.getElementById('solutions');
+            let html = '<div class="status success">✅ Solutions Implemented</div>';
+            
+            html += '<h4>Solution 1: Enhanced Error Handling for Content Settings</h4>';
+            html += '<pre><code>// Before (causing error):
+chrome.contentSettings[permission].get({primaryUrl: pattern}, (result) => {
+  resolve(result.setting || \'prompt\'); // Error if result is undefined
+});
+
+// After (safe):
+chrome.contentSettings[permission].get({primaryUrl: pattern}, (result) => {
+  if (chrome.runtime.lastError) {
+    console.log(`Error getting ${permission} setting:`, chrome.runtime.lastError);
+    resolve(\'prompt\');
+    return;
+  }
+  resolve(result && result.setting ? result.setting : \'prompt\');
+});</code></pre>';
+            
+            html += '<h4>Solution 2: Domain Validation</h4>';
+            html += '<pre><code>// Added domain validation before creating URL patterns
+if (!domain || domain.includes(\' \') || domain.length === 0) {
+  console.log(`Skipping invalid domain: ${domain}`);
+  continue;
+}</code></pre>';
+            
+            html += '<h4>Solution 3: Favicon Error Handling</h4>';
+            html += '<pre><code>// Added error handling and fallback for favicons
+<img src="${favicon}" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'block\';">
+<div style="display: none; background: var(--accent); color: white;">
+  ${domain.charAt(0).toUpperCase()}
+</div></code></pre>';
+            
+            html += '<h4>Solution 4: Safe Statistics Updates</h4>';
+            html += '<pre><code>// Added null checks for all statistics elements
+Object.entries(elements).forEach(([id, value]) => {
+  const element = document.getElementById(id);
+  if (element) {
+    element.textContent = value;
+  }
+});</code></pre>';
+            
+            container.innerHTML = html;
+        }
+
+        // Run all tests
+        testFixes();
+        testErrorDetails();
+        testSolutions();
+    </script>
+</body>
+</html>

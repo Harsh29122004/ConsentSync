@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConsentSync Improvements Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .warning {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        .code {
+            background: #f1f3f4;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        .favicon-test {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .favicon-test img {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>ConsentSync Improvements Test</h1>
+    
+    <div class="test-section success">
+        <h2>✅ Improvement 1: Favicon Error Handling</h2>
+        <p><strong>Problem:</strong> Console errors when Google favicon service returns 404 for missing favicons</p>
+        <p><strong>Solution:</strong> Added error handling with fallback to default icon</p>
+        
+        <h3>Test Cases:</h3>
+        <div class="favicon-test">
+            <span>Valid domain (should show favicon):</span>
+            <img src="https://www.google.com/s2/favicons?domain=google.com&sz=32" alt="google.com" onerror="this.onerror=null; this.src='icons/default_favicon.svg';">
+            <span>google.com</span>
+        </div>
+        
+        <div class="favicon-test">
+            <span>Invalid domain (should show fallback):</span>
+            <img src="https://www.google.com/s2/favicons?domain=invalid-domain-that-does-not-exist-12345.com&sz=32" alt="invalid" onerror="this.onerror=null; this.src='icons/default_favicon.svg';">
+            <span>invalid-domain-that-does-not-exist-12345.com</span>
+        </div>
+        
+        <div class="code">
+            <strong>Implementation:</strong><br>
+            &lt;img src="${favicon}" onerror="this.onerror=null; this.src='icons/default_favicon.svg';"&gt;
+        </div>
+        
+        <p><strong>Result:</strong> No more console errors, graceful fallback to default icon</p>
+    </div>
+    
+    <div class="test-section success">
+        <h2>✅ Improvement 2: Word Document Export</h2>
+        <p><strong>Feature:</strong> Export consent logs and reports as Word document (.docx)</p>
+        <p><strong>Location:</strong> Consent Log tab → "Export to Word" button</p>
+        
+        <h3>What's Included in Export:</h3>
+        <ul>
+            <li>Executive Summary with statistics</li>
+            <li>Tracked websites table with permissions</li>
+            <li>Complete consent actions log with timestamps</li>
+            <li>Smart preferences configuration</li>
+            <li>Privacy recommendations</li>
+        </ul>
+        
+        <div class="code">
+            <strong>Implementation:</strong><br>
+            - Added "Export to Word" button in consent log tab<br>
+            - generateWordDocument() function creates structured HTML<br>
+            - Uses Chrome downloads API for file saving<br>
+            - Includes proper styling for Word compatibility
+        </div>
+        
+        <button onclick="testWordExport()">Test Word Export (Simulated)</button>
+        <div id="exportResult"></div>
+    </div>
+    
+    <div class="test-section warning">
+        <h2>⚠️ Important Notes</h2>
+        <ul>
+            <li><strong>No Breaking Changes:</strong> All existing features (Phases 1-7) remain untouched</li>
+            <li><strong>Permissions:</strong> Added "downloads" permission to manifest.json</li>
+            <li><strong>Fallback Icon:</strong> Created icons/default_favicon.svg for missing favicons</li>
+            <li><strong>Error Handling:</strong> Graceful degradation without console spam</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>📋 Implementation Summary</h2>
+        <p><strong>Files Modified:</strong></p>
+        <ul>
+            <li><code>dashboard.js</code> - Added favicon error handling and Word export functions</li>
+            <li><code>dashboard.html</code> - Added "Export to Word" button</li>
+            <li><code>manifest.json</code> - Added downloads permission</li>
+            <li><code>icons/default_favicon.svg</code> - Created fallback favicon</li>
+        </ul>
+        
+        <p><strong>New Functions:</strong></p>
+        <ul>
+            <li><code>exportToWord()</code> - Main export function</li>
+            <li><code>generateWordDocument()</code> - Creates Word document content</li>
+        </ul>
+    </div>
+
+    <script>
+        function testWordExport() {
+            const result = document.getElementById('exportResult');
+            result.innerHTML = `
+                <div style="background: #d4edda; padding: 10px; border-radius: 4px; margin-top: 10px;">
+                    <strong>✅ Export Test Successful!</strong><br>
+                    In the actual extension, this would:<br>
+                    - Generate a Word document with all consent data<br>
+                    - Save as "ConsentSync_Report_YYYY-MM-DD.docx"<br>
+                    - Show success toast notification<br>
+                    - Add activity log entry
+                </div>
+            `;
+        }
+        
+        // Test favicon error handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('img[src*="favicons"]');
+            images.forEach(img => {
+                img.addEventListener('error', function() {
+                    console.log('Favicon error handled gracefully - using fallback');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

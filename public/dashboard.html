@@ -1,0 +1,1201 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ConsentSync – Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .dashboard {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-xl);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+    
+    .dashboard-header {
+      background: var(--gradient-primary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .dashboard-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(59, 130, 246, 0.15) 0%, rgba(29, 78, 216, 0.15) 100%);
+      pointer-events: none;
+    }
+    
+    .dashboard-header::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+      animation: float 8s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(180deg); }
+    }
+    
+    .dashboard-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: var(--space-sm);
+      position: relative;
+      z-index: 1;
+      letter-spacing: -0.025em;
+    }
+    
+    .dashboard-subtitle {
+      font-size: 18px;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+      font-weight: 500;
+      letter-spacing: 0.025em;
+    }
+
+    /* Enhanced Tab Navigation */
+    .tab-navigation {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+    }
+
+    .tab-navigation:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tab-list {
+      display: flex;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-item {
+      flex: 1;
+      padding: var(--space-lg) var(--space-xl);
+      cursor: pointer;
+      transition: var(--transition);
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-weight: 500;
+      color: var(--muted);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tab-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+      transition: var(--transition);
+    }
+
+    .tab-item:hover::before {
+      left: 100%;
+    }
+
+    .tab-item:last-child {
+      border-right: none;
+    }
+
+    .tab-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .tab-item.active {
+      background: var(--card);
+      color: var(--text);
+      border-bottom: 3px solid var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .tab-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-primary);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .tab-item i {
+      font-size: 18px;
+      transition: var(--transition);
+    }
+
+    .tab-item:hover i {
+      transform: scale(1.1);
+    }
+
+    .tab-content {
+      padding: var(--space-xl);
+      min-height: 600px;
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tab-pane {
+      display: none;
+      animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Enhanced Smart Preferences */
+    .preferences-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .preference-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-xl);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .preference-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .preference-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--accent);
+    }
+
+    .preference-card:hover::before {
+      opacity: 1;
+    }
+
+    .preference-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .preference-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+    }
+
+    .preference-icon:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .preference-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.025em;
+    }
+
+    .preference-description {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: var(--space-lg);
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    .preference-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--border);
+    }
+
+    .preference-toggle {
+      position: relative;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 56px;
+      height: 30px;
+    }
+
+    .toggle-input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border);
+      transition: var(--transition-bounce);
+            border-radius: var(--radius-full);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .toggle-slider::before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: var(--transition-bounce);
+      border-radius: 50%;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toggle-input:checked + .toggle-slider {
+      background-color: var(--accent);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .toggle-input:checked + .toggle-slider::before {
+      transform: translateX(26px);
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: var(--transition);
+      border-radius: 50%;
+    }
+
+    .toggle-input:checked + .toggle-slider {
+      background-color: var(--accent);
+    }
+
+    .toggle-input:checked + .toggle-slider:before {
+      transform: translateX(24px);
+    }
+
+    /* Recommendations */
+    .recommendations {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(29, 78, 216, 0.1) 100%);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .recommendation-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: var(--transition);
+    }
+
+    .recommendation-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .recommendation-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+
+    .recommendation-text {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .recommendation-action {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-apply {
+      background: var(--accent);
+      color: white;
+      border: none;
+    }
+
+    .btn-apply:hover {
+      background: var(--accent-2);
+    }
+
+    /* Consent Log */
+    .consent-log {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .log-entry:hover {
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .log-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+
+    .log-content {
+      flex: 1;
+    }
+
+    .log-action {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .log-details {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .log-time {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* GDPR Controls */
+    .gdpr-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .gdpr-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .gdpr-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .gdpr-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 20px;
+      color: white;
+    }
+
+    .gdpr-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .gdpr-description {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: var(--transition);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 20px;
+      color: white;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Sites Table */
+    .sites-table {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    
+    .table-header {
+      background: var(--panel);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .table-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .table-controls {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .search-input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      min-width: 200px;
+    }
+    
+    .table-content {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .site-row {
+      display: grid;
+      grid-template-columns: 2fr repeat(5, 1fr) 120px;
+      gap: 12px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      transition: var(--transition);
+    }
+    
+    .site-row:hover {
+      background: rgba(59, 130, 246, 0.1);
+    }
+    
+    .site-row:last-child {
+      border-bottom: none;
+    }
+    
+    .site-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .site-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: white;
+    }
+    
+    .site-domain {
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .site-url {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    
+    .permission-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    
+    .status-allow {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .status-block {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    
+    .status-prompt {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    
+    .safety-score {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-weight: 600;
+    }
+    
+    .score-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: white;
+    }
+    
+    .score-safe {
+      background: var(--gradient-success);
+    }
+    
+    .score-warning {
+      background: var(--gradient-warning);
+    }
+    
+    .score-danger {
+      background: var(--gradient-danger);
+    }
+    
+    .site-actions {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .btn-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      transition: var(--transition);
+    }
+    
+    .btn-icon:hover {
+      transform: scale(1.1);
+    }
+
+    /* Empty States */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+    
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    .empty-text {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    
+    .empty-hint {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .dashboard {
+        padding: 16px;
+      }
+      
+      .tab-list {
+        flex-direction: column;
+      }
+      
+      .tab-item {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      
+      .tab-item.active {
+        border-bottom: 3px solid var(--accent);
+      }
+      
+      .preferences-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .gdpr-controls {
+        grid-template-columns: 1fr;
+      }
+      
+      .site-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+      <div class="dashboard-title">
+        <i class="fas fa-chart-line"></i> ConsentSync Dashboard
+      </div>
+      <div class="dashboard-subtitle">
+        Manage your privacy across all sites • Smart preferences & GDPR compliance
+      </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-navigation">
+      <div class="tab-list">
+        <div class="tab-item active" data-tab="overview">
+          <i class="fas fa-tachometer-alt"></i>
+          Overview
+        </div>
+        <div class="tab-item" data-tab="monitoring">
+          <i class="fas fa-broadcast-tower"></i>
+          Live Monitoring
+        </div>
+        <div class="tab-item" data-tab="analyzer">
+          <i class="fas fa-brain"></i>
+          Policy Analyzer
+        </div>
+        <div class="tab-item" data-tab="preferences">
+          <i class="fas fa-cog"></i>
+          Smart Preferences
+        </div>
+        <div class="tab-item" data-tab="consent">
+          <i class="fas fa-clipboard-list"></i>
+          Consent Log
+        </div>
+        <div class="tab-item" data-tab="gdpr">
+          <i class="fas fa-shield-alt"></i>
+          GDPR Controls
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Overview Tab -->
+        <div class="tab-pane active" id="overview">
+          <h2>Privacy Overview</h2>
+          
+          <!-- Statistics Grid -->
+          <section class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon" style="background: var(--gradient-primary);">
+                <i class="fas fa-globe"></i>
+              </div>
+              <div class="stat-value" id="totalSites">0</div>
+              <div class="stat-label">Sites Tracked</div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon" style="background: var(--gradient-success);">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div class="stat-value" id="avgScore">0</div>
+              <div class="stat-label">Avg Privacy Score</div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon" style="background: var(--gradient-warning);">
+                <i class="fas fa-cookie-bite"></i>
+              </div>
+              <div class="stat-value" id="totalCookies">0</div>
+              <div class="stat-label">Total Cookies</div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon" style="background: var(--gradient-danger);">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="stat-value" id="highRiskSites">0</div>
+              <div class="stat-label">High Risk Sites</div>
+            </div>
+          </section>
+
+          <!-- Recent Activity -->
+          <section class="card">
+            <div class="section-header">
+              <div class="label">
+                <i class="fas fa-history"></i> Recent Activity
+              </div>
+              <button class="btn btn-sm" id="clearActivity">
+                <i class="fas fa-trash"></i> Clear
+              </button>
+            </div>
+            <div class="activity-feed" id="dashboardActivity">
+              <div class="feed-item">
+                <div class="feed-icon">
+                  <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="feed-content">
+                  <div class="feed-text">Dashboard loaded</div>
+                  <div class="feed-time">Just now</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Live Monitoring Tab -->
+        <div class="tab-pane" id="monitoring">
+          <h2>Live Monitoring</h2>
+          
+          <!-- Sites & Permissions Table -->
+          <section class="sites-table">
+            <div class="table-header">
+              <div class="table-title">
+                <i class="fas fa-list"></i> Sites & Permissions
+              </div>
+              <div class="table-controls">
+                <input type="text" class="search-input" id="siteSearch" placeholder="Search sites...">
+                <button class="btn btn-primary btn-sm" id="addCurrentSite">
+                  <i class="fas fa-plus"></i> Add Current
+                </button>
+                <button class="btn btn-secondary btn-sm" id="exportData">
+                  <i class="fas fa-download"></i> Export
+                </button>
+              </div>
+            </div>
+            
+            <!-- Table Headers -->
+            <div class="site-row" style="background: var(--panel); font-weight: 600; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <div>Site</div>
+              <div>Location</div>
+              <div>Notifications</div>
+              <div>Camera</div>
+              <div>Microphone</div>
+              <div>Cookies</div>
+              <div>Safety</div>
+            </div>
+            
+            <!-- Table Content -->
+            <div class="table-content" id="sitesList">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-search"></i>
+                </div>
+                <div class="empty-text">No sites found</div>
+                <div class="empty-hint">Visit some websites to start tracking privacy settings</div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Policy Analyzer Tab -->
+        <div class="tab-pane" id="analyzer">
+          <h2>Policy Analyzer</h2>
+          
+          <section class="card">
+            <div class="section-header">
+              <div class="label">
+                <i class="fas fa-file-contract"></i> AI Policy Analysis
+              </div>
+            </div>
+            
+            <div class="policy-actions">
+              <button class="btn btn-primary" id="analyzeCurrentSite">
+                <i class="fas fa-brain"></i> Analyze Current Site
+              </button>
+              <button class="btn btn-success" id="analyzeAllSites">
+                <i class="fas fa-globe"></i> Analyze All Sites
+              </button>
+              <button class="btn btn-secondary" id="exportAnalysis">
+                <i class="fas fa-file-export"></i> Export Analysis
+              </button>
+            </div>
+
+            <div id="analysisResults" style="display: none;">
+              <!-- Analysis results will be populated here -->
+            </div>
+          </section>
+        </div>
+
+        <!-- Smart Preferences Tab -->
+        <div class="tab-pane" id="preferences">
+          <h2>Smart Preferences</h2>
+          
+          <!-- Automation Toggle -->
+          <section class="card">
+            <div class="section-header">
+              <div class="label">
+                <i class="fas fa-robot"></i> Smart Automation
+              </div>
+              <div class="toggle-switch">
+                <input type="checkbox" id="autoApplyToggle" class="toggle-input">
+                <label for="autoApplyToggle" class="toggle-slider"></label>
+              </div>
+            </div>
+            <div class="preference-description">
+              Automatically apply your privacy preferences to new sites based on your past decisions.
+            </div>
+          </section>
+
+          <!-- Preferences Grid -->
+          <section class="preferences-grid">
+            <div class="preference-card">
+              <div class="preference-header">
+                <div class="preference-icon" style="background: var(--gradient-primary);">
+                  <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                  <div class="preference-title">Location Access</div>
+                  <div class="preference-description">Control automatic location blocking</div>
+                </div>
+              </div>
+              <div class="preference-controls">
+                <span class="preference-status" id="locationStatus">Learning...</span>
+                <div class="preference-toggle">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="locationToggle" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="preference-card">
+              <div class="preference-header">
+                <div class="preference-icon" style="background: var(--gradient-danger);">
+                  <i class="fas fa-video"></i>
+                </div>
+                <div>
+                  <div class="preference-title">Camera Access</div>
+                  <div class="preference-description">Control automatic camera blocking</div>
+                </div>
+              </div>
+              <div class="preference-controls">
+                <span class="preference-status" id="cameraStatus">Learning...</span>
+                <div class="preference-toggle">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="cameraToggle" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="preference-card">
+              <div class="preference-header">
+                <div class="preference-icon" style="background: var(--gradient-warning);">
+                  <i class="fas fa-microphone"></i>
+                </div>
+                <div>
+                  <div class="preference-title">Microphone Access</div>
+                  <div class="preference-description">Control automatic microphone blocking</div>
+                </div>
+              </div>
+              <div class="preference-controls">
+                <span class="preference-status" id="microphoneStatus">Learning...</span>
+                <div class="preference-toggle">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="microphoneToggle" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="preference-card">
+              <div class="preference-header">
+                <div class="preference-icon" style="background: var(--gradient-info);">
+                  <i class="fas fa-bell"></i>
+                </div>
+                <div>
+                  <div class="preference-title">Notifications</div>
+                  <div class="preference-description">Control automatic notification blocking</div>
+                </div>
+              </div>
+              <div class="preference-controls">
+                <span class="preference-status" id="notificationStatus">Learning...</span>
+                <div class="preference-toggle">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="notificationToggle" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recommendations -->
+          <section class="recommendations">
+            <h3><i class="fas fa-lightbulb"></i> Smart Recommendations <span class="phase-badge">Phase 2 Feature</span></h3>
+            <div id="recommendationsList">
+              <!-- Populated by renderRecommendations() from consentLog block counts -->
+            </div>
+          </section>
+        </div>
+
+        <!-- Consent Log Tab -->
+        <div class="tab-pane" id="consent">
+          <h2>Consent Log</h2>
+          
+          <section class="card">
+            <div class="section-header">
+              <div class="label">
+                <i class="fas fa-clipboard-list"></i> Privacy Actions History
+              </div>
+              <div class="table-controls">
+                <input type="text" class="search-input" id="logSearch" placeholder="Search actions...">
+                <button class="btn btn-sm" id="exportToWord">
+                  <i class="fas fa-file-word"></i> Export to Word
+                </button>
+                <button class="btn btn-sm" id="clearLog">
+                  <i class="fas fa-trash"></i> Clear Log
+                </button>
+              </div>
+            </div>
+            
+            <div class="consent-log" id="consentLogList">
+              <div class="log-entry">
+                <div class="log-icon" style="background: var(--gradient-success);">
+                  <i class="fas fa-trash"></i>
+                </div>
+                <div class="log-content">
+                  <div class="log-action">Cleared cookies from google.com</div>
+                  <div class="log-details">Removed 12 tracking cookies</div>
+                </div>
+                <div class="log-time">2 min ago</div>
+              </div>
+              <div class="log-entry">
+                <div class="log-icon" style="background: var(--gradient-danger);">
+                  <i class="fas fa-ban"></i>
+                </div>
+                <div class="log-content">
+                  <div class="log-action">Blocked camera access on zoom.us</div>
+                  <div class="log-details">Automatic action based on preferences</div>
+                </div>
+                <div class="log-time">15 min ago</div>
+              </div>
+              <div class="log-entry">
+                <div class="log-icon" style="background: var(--gradient-warning);">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="log-content">
+                  <div class="log-action">Analyzed privacy policy for facebook.com</div>
+                  <div class="log-details">Score: 35/100 (High Risk)</div>
+                </div>
+                <div class="log-time">1 hour ago</div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- GDPR Controls Tab -->
+        <div class="tab-pane" id="gdpr">
+          <h2>GDPR & Privacy Controls</h2>
+          
+          <section class="gdpr-controls">
+            <div class="gdpr-card">
+              <div class="gdpr-icon" style="background: var(--gradient-success);">
+                <i class="fas fa-download"></i>
+              </div>
+              <div class="gdpr-title">Request My Data</div>
+              <div class="gdpr-description">Export all your privacy data and preferences</div>
+              <button class="btn btn-success" id="exportData">
+                <i class="fas fa-download"></i> Export Data
+              </button>
+            </div>
+
+            <div class="gdpr-card">
+              <div class="gdpr-icon" style="background: var(--gradient-danger);">
+                <i class="fas fa-trash-alt"></i>
+              </div>
+              <div class="gdpr-title">Erase My Data</div>
+              <div class="gdpr-description">Permanently delete all logs and preferences</div>
+              <button class="btn btn-danger" id="eraseData">
+                <i class="fas fa-trash-alt"></i> Erase All Data
+              </button>
+            </div>
+
+            <div class="gdpr-card">
+              <div class="gdpr-icon" style="background: var(--gradient-info);">
+                <i class="fas fa-cog"></i>
+              </div>
+              <div class="gdpr-title">Privacy Settings</div>
+              <div class="gdpr-description">Configure your privacy preferences</div>
+              <button class="btn btn-info" id="privacySettings">
+                <i class="fas fa-cog"></i> Settings
+              </button>
+            </div>
+
+            <div class="gdpr-card">
+              <div class="gdpr-icon" style="background: var(--gradient-warning);">
+                <i class="fas fa-eye"></i>
+              </div>
+              <div class="gdpr-title">Data Transparency</div>
+              <div class="gdpr-description">View what data we collect and store</div>
+              <button class="btn btn-warning" id="dataTransparency">
+                <i class="fas fa-eye"></i> View Data
+              </button>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="section-header">
+              <div class="label">
+                <i class="fas fa-info-circle"></i> Privacy Information
+              </div>
+            </div>
+            <div class="privacy-info">
+              <p><strong>Data Collection:</strong> ConsentSync only stores your privacy preferences locally. We do not collect, transmit, or store any personal browsing data.</p>
+              <p><strong>Local Processing:</strong> All privacy analysis happens in your browser. No data is sent to external servers.</p>
+              <p><strong>Your Rights:</strong> You have full control over your data. Export, modify, or delete it at any time.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast" hidden></div>
+  </div>
+  
+  <script src="translations.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

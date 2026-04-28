@@ -1,0 +1,301 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ConsentSync – Control Your Data</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+    <!-- Header with Branding -->
+    <header class="hero">
+      <div class="brand">
+        <div class="logo">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <div>
+          <h1>ConsentSync</h1>
+          <p class="tag">Control Your Data</p>
+        </div>
+        <button class="btn btn-primary" id="openDashboard">
+          <i class="fas fa-chart-line"></i> Dashboard
+        </button>
+      </div>
+      <div class="site" id="site">—</div>
+    </header>
+
+    <!-- Privacy Score Section -->
+    <section class="card score-card">
+      <div class="score-header">
+        <div class="label">Privacy Score</div>
+        <div class="score-badge" id="scoreBadge">—</div>
+      </div>
+      <div class="score-display">
+        <div class="score-circle" id="scoreCircle">
+          <span id="scoreValue">—</span>
+        </div>
+        <div class="score-label" id="scoreLabel">Analyzing...</div>
+      </div>
+      <div class="score-breakdown" id="scoreBreakdown">
+        <div class="breakdown-item">
+          <span class="breakdown-label">Policy Risk</span>
+          <span class="breakdown-value" id="policyRisk">—</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Permissions</span>
+          <span class="breakdown-value" id="permissionRisk">—</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Cookies</span>
+          <span class="breakdown-value" id="cookieRisk">—</span>
+        </div>
+      </div>
+      <div class="hint-text">Score calculated using permissions, cookies, and policy risk <span class="phase-badge">Phase 2</span></div>
+    </section>
+
+    <!-- Real-time Monitoring Feed -->
+    <section class="card">
+      <div class="section-header">
+        <div class="label">
+          <i class="fas fa-broadcast-tower"></i> Live Activity Feed
+        </div>
+        <button class="btn btn-sm" id="clearFeed">
+          <i class="fas fa-trash"></i> Clear
+        </button>
+      </div>
+      <div class="activity-feed" id="activityFeed">
+        <div class="feed-item">
+          <div class="feed-icon">
+            <i class="fas fa-info-circle"></i>
+          </div>
+          <div class="feed-content">
+            <div class="feed-text">Monitoring started</div>
+            <div class="feed-time">Just now</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cookie & Data Control -->
+    <section class="card">
+      <div class="section-header">
+        <div class="label">
+          <i class="fas fa-cookie-bite"></i> Cookie & Data Control
+          <span class="phase-badge">Phase 2</span>
+        </div>
+        <div class="toggle-switch">
+          <input type="checkbox" id="autoCleanToggle" class="toggle-input">
+          <label for="autoCleanToggle" class="toggle-label">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="hint-text">Runs automatically in the background (Phase 2)</div>
+      <div class="cookie-controls">
+        <div class="cookie-info">
+          <span class="cookie-count" id="cookieCount">0</span> cookies on this site
+        </div>
+        <div class="cookie-actions">
+          <button class="btn btn-danger" id="clearCookies">
+            <i class="fas fa-trash"></i> Clear All
+          </button>
+          <button class="btn btn-warning" id="blockCookies">
+            <i class="fas fa-ban"></i> Block Cookies
+          </button>
+        </div>
+      </div>
+      <div class="auto-clean-settings" id="autoCleanSettings" style="display: none;">
+        <div class="setting-item">
+          <label>Auto-delete after:</label>
+          <select id="autoCleanTime" class="select-input">
+            <option value="1">1 hour</option>
+            <option value="24">24 hours</option>
+            <option value="168">1 week</option>
+            <option value="720">1 month</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Permission Controls Grid -->
+    <section class="permissions-grid">
+      <div class="permission-card">
+        <div class="permission-header">
+          <i class="fas fa-map-marker-alt permission-icon geo"></i>
+          <span class="permission-name">Location</span>
+        </div>
+        <div class="permission-status" id="geoState">—</div>
+        <div class="permission-actions">
+          <button class="btn btn-success btn-sm" id="geoAllow">
+            <i class="fas fa-check"></i> Allow
+          </button>
+          <button class="btn btn-danger btn-sm" id="geoBlock">
+            <i class="fas fa-times"></i> Block
+          </button>
+        </div>
+      </div>
+
+      <div class="permission-card">
+        <div class="permission-header">
+          <i class="fas fa-bell permission-icon notif"></i>
+          <span class="permission-name">Notifications</span>
+        </div>
+        <div class="permission-status" id="notifState">—</div>
+        <div class="permission-actions">
+          <button class="btn btn-success btn-sm" id="notifAllow">
+            <i class="fas fa-check"></i> Allow
+          </button>
+          <button class="btn btn-danger btn-sm" id="notifBlock">
+            <i class="fas fa-times"></i> Block
+          </button>
+        </div>
+      </div>
+
+      <div class="permission-card">
+        <div class="permission-header">
+          <i class="fas fa-video permission-icon cam"></i>
+          <span class="permission-name">Camera</span>
+        </div>
+        <div class="permission-status" id="cameraState">—</div>
+        <div class="permission-actions">
+          <button class="btn btn-success btn-sm" id="cameraAllow">
+            <i class="fas fa-check"></i> Allow
+          </button>
+          <button class="btn btn-danger btn-sm" id="cameraBlock">
+            <i class="fas fa-times"></i> Block
+          </button>
+        </div>
+      </div>
+
+      <div class="permission-card">
+        <div class="permission-header">
+          <i class="fas fa-microphone permission-icon mic"></i>
+          <span class="permission-name">Microphone</span>
+        </div>
+        <div class="permission-status" id="micState">—</div>
+        <div class="permission-actions">
+          <button class="btn btn-success btn-sm" id="micAllow">
+            <i class="fas fa-check"></i> Allow
+          </button>
+          <button class="btn btn-danger btn-sm" id="micBlock">
+            <i class="fas fa-times"></i> Block
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy Policy Analyzer -->
+    <section class="card">
+      <div class="section-header">
+        <div class="label">
+          <i class="fas fa-file-contract"></i> Privacy Policy Analyzer
+        </div>
+        <div class="policy-status" id="policyStatus">Detecting...</div>
+      </div>
+      <div class="policy-language-indicator" id="policyLanguageIndicator" style="display: none; font-size: 12px; color: #9ca3af; margin-top: 4px;">
+        <!-- Filled dynamically with detected language info -->
+      </div>
+      
+      <div class="policy-actions">
+        <button class="btn btn-primary" id="fetchPolicy">
+          <i class="fas fa-download"></i> Fetch Policy
+        </button>
+        <button class="btn btn-success" id="analyzePolicy">
+          <i class="fas fa-brain"></i> Analyze (AI)
+        </button>
+        <button class="btn btn-secondary" id="exportSummary">
+          <i class="fas fa-file-export"></i> Export
+        </button>
+      </div>
+
+      <div class="policy-preview" id="policyPreview" style="display: none;">
+        <div class="preview-header">
+          <span>Policy Preview</span>
+          <button class="btn btn-sm" id="togglePreview">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="preview-content" id="previewContent">
+          <div class="analyzed-text" id="analyzedText">
+            <!-- AI analysis results will be inserted here -->
+          </div>
+        </div>
+      </div>
+
+      <div class="policy-summary" id="policySummary" style="display: none;">
+        <div class="summary-header">
+          <span>AI Analysis Summary</span>
+        </div>
+        <div class="summary-content" id="summaryContent">
+          <!-- Summary will be inserted here -->
+        </div>
+      </div>
+
+      <div class="policy-translation" id="policyTranslationSection" style="display: none; margin-top: 10px;">
+        <div class="preview-header">
+          <span>Original vs Translated Policy</span>
+          <button class="btn btn-sm" id="toggleTranslationPreview">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="translation-content" id="translationContent" style="display: none; margin-top: 6px; gap: 8px; grid-template-columns: 1fr 1fr;">
+          <div>
+            <div style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Original Policy Text</div>
+            <pre id="originalPolicyContent" style="max-height: 140px; overflow: auto; font-size: 11px; background: rgba(15,23,42,0.6); border-radius: 6px; padding: 6px;"></pre>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;">Translated Policy Text</div>
+            <pre id="translatedPolicyContent" style="max-height: 140px; overflow: auto; font-size: 11px; background: rgba(15,23,42,0.6); border-radius: 6px; padding: 6px;"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Automation Section -->
+    <section class="card">
+      <div class="section-header">
+        <div class="label">
+          <i class="fas fa-robot"></i> Smart Automation
+        </div>
+        <div class="automation-status" id="automationStatus">Learning your preferences...</div>
+      </div>
+      
+      <div class="automation-actions">
+        <button class="btn btn-info" id="autoView">
+          <i class="fas fa-eye"></i> View Rules
+        </button>
+        <button class="btn btn-warning" id="autoReset">
+          <i class="fas fa-redo"></i> Reset Learning
+        </button>
+      </div>
+      
+      <div class="automation-hint">
+        <i class="fas fa-lightbulb"></i>
+        ConsentSync learns from your choices and automatically applies similar settings to new sites.
+      </div>
+    </section>
+
+    <!-- Live Log -->
+    <section class="card">
+      <div class="section-header">
+        <div class="label">
+          <i class="fas fa-terminal"></i> Live Log
+        </div>
+        <button class="btn btn-sm" id="clearLog">
+          <i class="fas fa-trash"></i> Clear
+        </button>
+      </div>
+      <div class="log-container">
+        <pre id="log" class="log-content"></pre>
+      </div>
+    </section>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast" hidden></div>
+  </div>
+  <script src="translations.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "domains": [
+    "malware.test",
+    "phishing.example",
+    "bad-ads.example",
+    "tracker.example"
+  ]
+}
+

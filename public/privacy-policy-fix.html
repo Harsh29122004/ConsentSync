@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy Detection Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .fix-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Privacy Policy Detection Fix</h1>
+    <p>Fixed the "Could not establish connection. Receiving end does not exist" error and improved privacy policy detection.</p>
+
+    <div class="fix-section">
+        <h2>❌ Problem Identified</h2>
+        <div class="status warning">
+            <strong>Error:</strong> "Could not establish connection. Receiving end does not exist."
+        </div>
+        
+        <h3>🔍 Root Cause:</h3>
+        <ul>
+            <li><strong>Content Script Not Loaded:</strong> The content script wasn't injected on certain pages</li>
+            <li><strong>Unsupported Page Types:</strong> chrome:// URLs and extension pages can't have content scripts</li>
+            <li><strong>No Error Handling:</strong> No fallback mechanism when content script injection fails</li>
+            <li><strong>Timing Issues:</strong> Content script might not be ready when message is sent</li>
+        </ul>
+    </div>
+
+    <div class="fix-section">
+        <h2>✅ Solution Implemented</h2>
+        <div class="status success">
+            <strong>Fixed:</strong> Robust privacy policy detection with proper error handling
+        </div>
+        
+        <h3>🔧 Fixes Applied:</h3>
+        <ul>
+            <li>✅ <strong>Page Type Validation:</strong> Check if page supports content script injection</li>
+            <li>✅ <strong>Dynamic Script Injection:</strong> Inject content script if not already loaded</li>
+            <li>✅ <strong>Error Handling:</strong> Graceful fallback when injection fails</li>
+            <li>✅ <strong>Retry Mechanism:</strong> Retry detection after successful injection</li>
+            <li>✅ <strong>User Feedback:</strong> Clear messages about what's happening</li>
+        </ul>
+    </div>
+
+    <div class="fix-section">
+        <h2>📝 Code Changes</h2>
+        
+        <h3>1. Popup.js - Enhanced Privacy Policy Detection</h3>
+        <div class="code-block">
+            <pre><code>// Added page type validation
+if (!this.currentTab.url || this.currentTab.url.startsWith('chrome://') || 
+    this.currentTab.url.startsWith('chrome-extension://')) {
+  policyStatusEl.textContent = 'Cannot scan this page';
+  policyStatusEl.className = 'policy-status status-warning';
+  return;
+}
+
+// Added dynamic script injection
+chrome.tabs.sendMessage(this.currentTab.id, {type: "FIND_POLICY"}, (res) => {
+  if (chrome.runtime.lastError) {
+    // Content script not loaded, try to inject it
+    chrome.scripting.executeScript({
+      target: { tabId: this.currentTab.id },
+      files: ['content.js']
+    }, () => {
+      if (chrome.runtime.lastError) {
+        policyStatusEl.textContent = 'Cannot scan this page';
+        return;
+      }
+      
+      // Retry after injection
+      setTimeout(() => {
+        chrome.tabs.sendMessage(this.currentTab.id, {type: "FIND_POLICY"}, (res2) => {
+          // Handle response...
+        });
+      }, 500);
+    });
+    return;
+  }
+  // Handle normal response...
+});</code></pre>
+        </div>
+        
+        <h3>2. Dashboard.js - Enhanced Policy Analysis</h3>
+        <div class="code-block">
+            <pre><code>// Added page type validation
+if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+  this.addActivity('Cannot scan this page type', 'warning');
+  return;
+}
+
+// Added dynamic script injection with retry
+chrome.tabs.sendMessage(tab.id, {type: "FIND_POLICY"}, (response) => {
+  if (chrome.runtime.lastError) {
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ['content.js']
+    }, () => {
+      if (chrome.runtime.lastError) {
+        this.addActivity('Cannot inject script on this page', 'warning');
+        return;
+      }
+      
+      // Retry after injection
+      setTimeout(() => {
+        chrome.tabs.sendMessage(tab.id, {type: "FIND_POLICY"}, (response2) => {
+          // Handle response with analysis...
+        });
+      }, 500);
+    });
+    return;
+  }
+  // Handle normal response...
+});</code></pre>
+        </div>
+    </div>
+
+    <div class="fix-section">
+        <h2>🚀 How It Works Now</h2>
+        <div class="status info">
+            <strong>Robust Detection Process:</strong>
+        </div>
+        
+        <h3>📋 Detection Flow:</h3>
+        <ol>
+            <li><strong>Page Validation:</strong> Check if page supports content script injection</li>
+            <li><strong>Initial Attempt:</strong> Try to send message to existing content script</li>
+            <li><strong>Error Detection:</strong> If connection fails, inject content script dynamically</li>
+            <li><strong>Retry:</strong> Wait 500ms and try detection again</li>
+            <li><strong>Fallback:</strong> If injection fails, show appropriate error message</li>
+            <li><strong>Success:</strong> Analyze detected privacy policy and show results</li>
+        </ol>
+        
+        <h3>🎯 Supported Page Types:</h3>
+        <ul>
+            <li>✅ <strong>Regular Websites:</strong> https://, http:// URLs</li>
+            <li>✅ <strong>Local Pages:</strong> file:// URLs (if allowed)</li>
+            <li>❌ <strong>Chrome Pages:</strong> chrome:// URLs (not supported)</li>
+            <li>❌ <strong>Extension Pages:</strong> chrome-extension:// URLs (not supported)</li>
+        </ul>
+    </div>
+
+    <div class="fix-section">
+        <h2>🧪 Testing Instructions</h2>
+        
+        <h3>✅ Test Cases:</h3>
+        <ol>
+            <li><strong>Regular Website:</strong> Visit any website and test privacy policy detection</li>
+            <li><strong>Chrome Page:</strong> Try on chrome://settings - should show "Cannot scan this page"</li>
+            <li><strong>Extension Page:</strong> Try on extension dashboard - should show appropriate message</li>
+            <li><strong>No Policy Site:</strong> Visit a site without privacy policy - should detect correctly</li>
+            <li><strong>Policy Site:</strong> Visit a site with privacy policy - should detect and analyze</li>
+        </ol>
+        
+        <h3>🎯 Expected Results:</h3>
+        <ul>
+            <li>✅ <strong>No More Connection Errors:</strong> Clean console without runtime errors</li>
+            <li>✅ <strong>Proper Detection:</strong> Privacy policies detected on supported pages</li>
+            <li>✅ <strong>Clear Feedback:</strong> User-friendly messages for all scenarios</li>
+            <li>✅ <strong>Robust Fallback:</strong> Graceful handling of unsupported pages</li>
+        </ul>
+    </div>
+
+    <div class="fix-section">
+        <h2>📊 Error Handling Summary</h2>
+        
+        <h3>🔧 Error Scenarios Handled:</h3>
+        <ul>
+            <li>✅ <strong>Content Script Not Loaded:</strong> Dynamic injection with retry</li>
+            <li>✅ <strong>Unsupported Page Types:</strong> Clear error messages</li>
+            <li>✅ <strong>Injection Failures:</strong> Graceful fallback</li>
+            <li>✅ <strong>Network Issues:</strong> Timeout and retry mechanism</li>
+            <li>✅ <strong>Permission Denied:</strong> Appropriate user feedback</li>
+        </ul>
+        
+        <h3>🎨 User Experience:</h3>
+        <ul>
+            <li>✅ <strong>Clear Status:</strong> Users know exactly what's happening</li>
+            <li>✅ <strong>No Confusion:</strong> No more cryptic error messages</li>
+            <li>✅ <strong>Helpful Feedback:</strong> Actionable information for users</li>
+            <li>✅ <strong>Consistent Behavior:</strong> Same experience across all page types</li>
+        </ul>
+    </div>
+</body>
+</html>
